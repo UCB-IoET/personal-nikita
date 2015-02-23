@@ -99,6 +99,17 @@ b_socket = storm.net.udpsocket(service_invoke,
 							   end
 							end)
 
+c_socket = storm.net.udpsocket(service_reply,
+							function(payload, from, port)
+							   print (string.format("from %s port %d",from,port))
+							   local msg = storm.mp.unpack(payload)
+							   if (type(msg) ~= "table") then
+								  print(msg)
+							   else
+								  pt(msg)
+							   end
+							end)
+
 -- enable a shell
 sh = require "stormsh"
 sh.start()
