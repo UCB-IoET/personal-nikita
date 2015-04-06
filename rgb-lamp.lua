@@ -16,14 +16,14 @@ storm.io.set_pull(storm.io.PULL_UP, storm.io.D3)
 
 function listen_rising()
    storm.io.watch_single(storm.io.RISING, storm.io.D3, function()
-							storm.n.neopixel(blue)
+							storm.n.neopixel(blue, storm.io.D2)
 							listen_falling()
 													   end)
 end
 
 function listen_falling()
    storm.io.watch_single(storm.io.FALLING, storm.io.D3, function()
-							storm.n.neopixel(offish)
+							storm.n.neopixel(offish, storm.io.D2)
 							listen_rising()
 														end)
 end
