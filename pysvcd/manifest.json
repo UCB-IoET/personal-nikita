@@ -1,0 +1,426 @@
+{
+    "pm.storm.svc.metadata": {
+        "id": "0x3000",
+        "name": "Device metadata",
+        "author": "Michael Andersen",
+        "desc": "Metadata about the device",
+        "attributes": {
+            "pm.storm.attr.meta.id": {
+                "id": "0x4007",
+                "name": "Device name",
+                "format": [
+                    [
+                        "pstr",
+                        "name",
+                        "The device name, as a pascal string"
+                    ]
+                ]
+            }
+        }
+    },
+    "pm.storm.svc.genericbool": {
+        "id": "0x3001",
+        "name": "Generic bool",
+        "author": "Michael Andersen",
+        "desc": "An arbitrary boolean service",
+        "attributes": {
+            "pm.storm.attr.bool": {
+                "id": "0x4001",
+                "name": "Get/Set bool",
+                "format": [
+                    [
+                        "u8",
+                        "value",
+                        "The value of the boolean"
+                    ]
+                ]
+            }
+        }
+    },
+    "pm.storm.svc.ss": {
+        "id": "0x3002",
+        "name": "Starter shield",
+        "author": "Michael Andersen",
+        "desc": "Basic starter shield service",
+        "attributes": {
+            "pm.storm.attr.ss.ledflash": {
+                "id": "0x4002",
+                "name": "Flash LEDs",
+                "format": [
+                    [
+                        "u8",
+                        "lednum",
+                        "Which led to control 0=red0, 1=red1, 2=green, 3=blue"
+                    ],
+                    [
+                        "u8",
+                        "numflashes",
+                        "How many times to flash"
+                    ]
+                ]
+            },
+            "pm.storm.attr.ss.ledonoff": {
+                "id": "0x4003",
+                "name": "Turn Leds on/off",
+                "format": [
+                    [
+                        "u8",
+                        "lednum",
+                        "Which led to control 0=red0, 1=red1, 2=green, 3=blue"
+                    ],
+                    [
+                        "s16",
+                        "duration",
+                        "Duration in ms to stay on for. 0 is off, <0 is infinity"
+                    ]
+                ]
+            },
+            "pm.storm.attr.ss.buzz": {
+                "id": "0x4004",
+                "name": "Buzz",
+                "format": [
+                    [
+                        "u16",
+                        "delay",
+                        "The number of ticks in a given pulse"
+                    ],
+                    [
+                        "u16",
+                        "duration",
+                        "The length of time to buzz"
+                    ]
+                ]
+            }
+        }
+    },
+    "pm.storm.svc.ledpanel": {
+        "id": "0x3003",
+        "name": "LED Panel",
+        "author": "Michael Andersen",
+        "desc": "LED panel light control",
+        "attributes": {
+            "pm.storm.attr.ledpanel.flash": {
+                "id": "0x4005",
+                "name": "Flash ledpanel",
+                "format": [
+                    [
+                        "u8",
+                        "lednum",
+                        "Which led to control 1=red, 2=green, 4=blue, combinations allowed"
+                    ],
+                    [
+                        "u8",
+                        "numflashes",
+                        "How many times to flash"
+                    ]
+                ]
+            },
+            "pm.storm.attr.ledpanel.onoff": {
+                "id": "0x4006",
+                "name": "Panel on/off",
+                "format": [
+                    [
+                        "u8",
+                        "lednum",
+                        "Which led to control 1=red, 2=green, 4=blue, combinations allowed"
+                    ],
+                    [
+                        "s16",
+                        "duration",
+                        "Duration in ms to stay on for. 0 is off, <0 is infinity"
+                    ]
+                ]
+            },
+            "pm.storm.attr.ledpanel.motd": {
+                "id": "0x4008",
+                "name": "Get motd",
+                "format": [
+                    [
+                        "pstr",
+                        "motd",
+                        "A message of the day as a pascal string"
+                    ]
+                ]
+            }
+        }
+    },
+    "pm.storm.svc.nespresso": {
+        "id": "0x3004",
+        "name": "Nespresso",
+        "author": "Sam Kumar and Michael Chen and Leonard Truong",
+        "desc": "Automatically prepares your coffee",
+        "attributes": {
+            "pm.storm.attr.nespresso.mkcoffee": {
+                "id": "0x4c0f",
+                "name": "Make coffee",
+                "format": [
+                    [
+                        "u16",
+                        "secH20",
+                        "How many seconds to add water"
+                    ]
+                ]
+            },
+            "pm.storm.attr.nespresso.clnself": {
+                "id": "0x4caf",
+                "name": "Clean the coffee machine",
+                "format": []
+            }
+        }
+    },
+    "pm.storm.svc.accelerometer": {
+        "id": "0x3005",
+        "name": "Accelerometer",
+        "author": "Michael Andersen",
+        "desc": "Gives a stream of accelerometer data",
+        "attributes": {
+            "pm.storm.attr.accelerometer.telemetry": {
+                "id": "0x4009",
+                "name": "Telemetry",
+                "format": [
+                    [
+                        "s16",
+                        "aX",
+                        "Accelerometer X Axis"
+                    ],
+                    [
+                        "s16",
+                        "aY",
+                        "Accelerometer Y Axis"
+                    ],
+                    [
+                        "s16",
+                        "aZ",
+                        "Accelerometer Z Axis"
+                    ],
+                    [
+                        "s16",
+                        "mX",
+                        "Magnetometer X Axis"
+                    ],
+                    [
+                        "s16",
+                        "mY",
+                        "Magnetometer Y Axis"
+                    ],
+                    [
+                        "s16",
+                        "mZ",
+                        "Magnetometer Z Axis"
+                    ]
+                ]
+            }
+        }
+    },
+    "pm.storm.shell": {
+        "id": "0x3006",
+        "name": "Shell",
+        "author": "Michael Andersen",
+        "desc": "Allows execution of Lua",
+        "attributes": {
+            "pm.storm.attr.shell.setchunk": {
+                "id": "0x400a",
+                "name": "SetChunk",
+                "format": [
+                    [
+                        "u8",
+                        "num",
+                        "Chunk Number"
+                    ],
+                    [
+                        "pstr",
+                        "content",
+                        "Chunk Content"
+                    ]
+                ]
+            },
+            "pm.storm.attr.shell.verify": {
+                "id": "0x400b",
+                "name": "Verify",
+                "format": [
+                    [
+                        "u8",
+                        "total",
+                        "Expected chunks"
+                    ],
+                    [
+                        "pstr",
+                        "missing",
+                        "First 10 missing chunks"
+                    ]
+                ]
+            },
+            "pm.storm.attr.shell.execute": {
+                "id": "0x400c",
+                "name": "Execute",
+                "format": [
+                    [
+                        "u8",
+                        "total",
+                        "Expected chunks"
+                    ]
+                ]
+            },
+            "pm.storm.attr.shell.init": {
+                "id": "0x400d",
+                "name": "Init",
+                "format": [
+                    [
+                        "u8",
+                        "total",
+                        "Expected chunks"
+                    ]
+                ]
+            }
+        }
+    },
+    "pm.storm.blipstats": {
+        "id": "0x3007",
+        "name": "BlipStats",
+        "author": "Michael Andersen",
+        "desc": "Gives the blip statistics of the node",
+        "attributes": {
+            "pm.storm.attr.blipstats": {
+                "id": "0x400e",
+                "name": "Stats",
+                "format": [
+                    [
+                        "u16",
+                        "sent",
+                        "Total IP sent"
+                    ],
+                    [
+                        "u16",
+                        "forwarded",
+                        "Total IP forwarded"
+                    ],
+                    [
+                        "u8",
+                        "rx_drop",
+                        "L2 frags dropped due to 6lowpan failures"
+                    ],
+                    [
+                        "u8",
+                        "tx_drop",
+                        "L2 frags dropped due to link failures"
+                    ],
+                    [
+                        "u8",
+                        "fw_drop",
+                        "L2 frags dropped when forwarding"
+                    ],
+                    [
+                        "u8",
+                        "rx_total",
+                        "L2 frags received"
+                    ],
+                    [
+                        "u8",
+                        "encfail",
+                        "frags dropped due to send queue"
+                    ],
+                    [
+                        "u8",
+                        "fragpool",
+                        "free fragments in pool"
+                    ],
+                    [
+                        "u8",
+                        "sendinfo",
+                        "free sendinfo structs"
+                    ],
+                    [
+                        "u8",
+                        "sendentry",
+                        "free sendentry structs"
+                    ],
+                    [
+                        "u8",
+                        "sndqueue",
+                        "free send queue entries"
+                    ],
+                    [
+                        "u8",
+                        "_",
+                        "reserved"
+                    ],
+                    [
+                        "u16",
+                        "heapfree",
+                        "free space in the heap"
+                    ],
+                    [
+                        "u16",
+                        "udp_sent",
+                        "sent udp packets"
+                    ],
+                    [
+                        "u16",
+                        "udp_rcvd",
+                        "received udp packets"
+                    ]
+                ]
+            }
+        }
+    },
+    "pm.storm.pecs.proxy": {
+        "id": "0x3008",
+        "name": "Proxy Firestorm for PECS Board",
+        "author": "Leonard Truong, Sam Kumar, Michael Chen",
+        "desc": "Proxy board that communicates with the PECS board via reliable network queue",
+        "attributes": {
+            "pm.storm.attr.pecs.fans": {
+                "id": "0x400f",
+                "name": "Fans",
+                "format": [
+                    [
+                        "u8",
+                        "state",
+                        "0=OFF, 1=LOW, 2=MEDIUM, 3=HIGH"
+                    ]
+                ]
+            },
+            "pm.storm.attr.pecs.heaters": {
+                "id": "0x4010",
+                "name": "Heaters",
+                "format": [
+                    [
+                        "u8",
+                        "state",
+                        "0=OFF, 1=ON, 2=TOGGLE"
+                    ]
+                ]
+            },
+            "pm.storm.attr.pecs.occupancy": {
+                "id": "0x4011",
+                "name": "Occupancy",
+                "format": [
+                    [
+                        "u8",
+                        "state",
+                        "0=Not Occupied, 1=Occupied"
+                    ]
+                ]
+            }
+        }
+    },
+    "pm.storm.smart_fan.fan_speed": {
+        "id": "0x3009",
+        "name": "Smart Fan",
+        "author": "Romi Phadte, Cesar Armando Torres, Michael Ho, Aparna Dhinakaran",
+        "desc": "Fan with variable speed",
+        "attributes": {
+            "pm.storm.attr.smartfan.speed": {
+                "id": "0x4012",
+                "name": "Fan",
+                "format": [
+                    [
+                        "u8",
+                        "state",
+                        "0=OFF, 1=LOW, 2=MEDIUM, 3=HIGH"
+                    ]
+                ]
+            }
+        }
+    }
+}
