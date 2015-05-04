@@ -422,5 +422,47 @@
                 ]
             }
         }
+    },
+
+    "pm.storm.toaster": {
+        "id": "0x3010",
+        "name": "Toaster service",
+        "author": "Nikita Kitaev",
+        "desc": "Toaster service",
+        "attributes": {
+            "pm.storm.attr.toaster.on": {
+                "id": "0x3010",
+                "name": "Toaster on",
+                "format": [
+                    [
+                        "u8",
+                        "on",
+                        "The device is on if this is nonzero"
+                    ]
+                ]
+            },
+            "pm.storm.attr.toaster.setpoint": {
+                "id": "0x3010",
+                "name": "Temperature setpoint",
+                "format": [
+                    [
+                        "u16",
+                        "Setpoint",
+                        "Setpoint"
+                    ]
+                ]
+            },
+            "pm.storm.attr.toaster.temp": {
+                "id": "0x3010",
+                "name": "Temperature reading",
+                "format": [
+                    [
+                        "u16",
+                        "Temperature",
+                        "Temperature"
+                    ]
+                ]
+            }
+        }
     }
 }
