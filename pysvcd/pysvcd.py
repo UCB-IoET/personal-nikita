@@ -7,6 +7,46 @@ import threading
 import json
 from Queue import Queue, Empty
 from collections import namedtuple
+import struct
+
+# Code for packing/unpacking the SVCD formats
+unpackers = {
+                "u8": lambda s: (struct.unpack("b", s[0])[0], s[1:]),
+                "s8": lambda s: (struct.unpack("B", s[0])[0], s[1:]),
+                "u16": lambda s: (struct.unpack("h", s[0:2])[0], s[2:]),
+                "s16": lambda s: (struct.unpack("H", s[0:2])[0], s[2:]),
+                "pstr": lambda s: (s[1:ord(s[0])+1], s[ord(s[0])+1:]),
+    }
+
+packers = {
+                "u8": lambda val: (struct.pack("b", val)),
+                "s8": lambda val: (struct.pack("B", val)),
+                "u16": lambda val: (struct.pack("h", val)),
+                "s16": lambda val: (struct.pack("H", val)),
+                "pstr": lambda val: (chr(len(val)) + val),
+    }
+
+def svcd_unpack(val, format):
+    print "unpacking", val, format
+    res = []
+    for type in format:
+        subval, val = unpackers[type](val)
+        res.append(subval)
+
+    if len(res) == 1:
+        return res[0]
+    else:
+        return tuple(res)
+
+def svcd_pack(val, format):
+    if type(val) in (int, float, str):
+        val = [val]
+    res = ""
+    for subval, tp in zip(val, format):
+        res += packers[tp](subval)
+    return res
+
+assert svcd_unpack(svcd_pack(5, ['u16']), ['u16']) == 5
 
 class TimeoutException(Exception):
     pass
@@ -156,6 +196,21 @@ class SerialSVCD(object):
     def stop(self):
         self.bridge.stop()
 
+    def get_service_info(self, svc):
+        svc = self.get_service_name(svc)
+        if svc in self.manifest:
+            return self.manifest[svc]
+        else:
+            return None
+
+    def get_attribute_info(self, svc, attr):
+        svc = self.get_service_name(svc)
+        attr = self.get_attribute_name(svc, attr)
+        try:
+            return self.manifest[svc]["attributes"][attr]
+        except KeyError:
+            return None
+
     def get_service_name(self, svc):
         for k, v in self.manifest.items():
             if int(v['id'], 16) == svc:
@@ -230,12 +285,19 @@ class SerialSVCD(object):
                 self.service_table[id][svcid] = sorted(set(self.service_table[id][svcid]) | set(svcval))
 
     def write(self, targetip, svcid, attrid, payload, timeout_ms):
+        info = self.get_attribute_info(svcid, attrid)
+        if info is None or "format" not in info:
+            val = payload
+        else:
+            format = [x[0] for x in info["format"]]
+            val = svcd_pack(val, format)
+
         obj = {
             "name": "SVCD.write",
             "targetip": targetip,
             "svcid": svcid,
             "attrid": attrid,
-            "payload": payload,
+            "payload": val,
             "timeout_ms": timeout_ms
         }
 
@@ -243,6 +305,7 @@ class SerialSVCD(object):
         return obj["code"]
 
     def subscribe(self, targetip, svcid, attrid, on_notify):
+        assert on_notify is not None
         obj = {
             "name": "SVCD.subscribe",
             "targetip": targetip,
@@ -253,7 +316,15 @@ class SerialSVCD(object):
 
         ivkid = self.bridge.do_task(obj, block=True)["ivkid"]
 
-        self.notifiers[ivkid] = on_notify
+        info = self.get_attribute_info(svcid, attrid)
+        if info is None or "format" not in info:
+            wrapped_on_notify = on_notify
+        else:
+            format = [x[0] for x in info["format"]]
+            def wrapped_on_notify(val):
+                on_notify(svcd_unpack(val, format))
+
+        self.notifiers[ivkid] = wrapped_on_notify
 
         def unsubscribe_fn():
             self.__unsubscribe(targetip, svcid, attrid, ivkid)
@@ -272,3 +343,4 @@ class SerialSVCD(object):
         self.bridge.do_task(obj, block=True)
 
         del self.notifiers[ivkid]
+
