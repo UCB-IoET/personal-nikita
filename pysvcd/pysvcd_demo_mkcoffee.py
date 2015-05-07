@@ -6,6 +6,15 @@ import time
 from pysvcd import SerialSVCD
 import sys
 
+def pprint(table):
+    for k, v in table.items():
+        print repr(k), ": {"
+        for kk, vv in v.items():
+            print "  ", repr(kk), ": {"
+            for kkk, vvv in vv.items():
+                print "  ", "  ", repr(kkk), ":", type(vvv)
+            print "  ", "}"
+        print "}"
 
 svcd = SerialSVCD()
 try:
@@ -14,7 +23,7 @@ try:
     while True:
         table = svcd.get_table()
         if set(table.keys()) != last_keys:
-            print table
+            pprint(table)
             last_keys = set(table.keys())
         try:
             x = table["coffee"][u'pm.storm.svc.nespresso'][u'pm.storm.attr.nespresso.mkcoffee']
@@ -23,9 +32,10 @@ try:
 
         if x:
             try:
-                print "writing...", x.write("\0\0\0\0", timeout_ms=1000)
+                print "writing...", x.write(5, timeout_ms=1000)
             except:
                 print "write failed"
+                raise
             time.sleep(2.0)
         time.sleep(1.0)
 except KeyboardInterrupt:

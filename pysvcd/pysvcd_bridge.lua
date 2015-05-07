@@ -58,17 +58,19 @@ exec_packed = function(obj)
                            print_packed(event)
                        end)
         elseif unpacked.name == "SVCD.subscribe" then
-            ivkid = SVCD.subscribe(unpacked.targetip,
-                                   unpacked.svcid,
-                                   unpacked.attrid,
-                                   function(val)
-                                       local event = {
-                                           name = "notify",
-                                           ivkid = ivkid,
-                                           val = val
-                                       }
-                                       print_packed(event)
-                                   end)
+            local ivkid = SVCD.ivkid
+            local ivkid = SVCD.subscribe(unpacked.targetip,
+										 unpacked.svcid,
+										 unpacked.attrid,
+										 function(val)
+											local event = {
+											   name = "notify",
+											   ivkid = ivkid,
+											   val = val,
+                                               more = "foobar"
+											}
+											print_packed(event)
+										 end)
             local eventb = {
                 name = "subscribed",
                 callback_id = unpacked.callback_id,

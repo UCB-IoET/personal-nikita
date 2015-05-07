@@ -431,7 +431,7 @@
         "desc": "Toaster service",
         "attributes": {
             "pm.storm.attr.toaster.on": {
-                "id": "0x3010",
+                "id": "0x4001",
                 "name": "Toaster on",
                 "format": [
                     [
@@ -442,7 +442,7 @@
                 ]
             },
             "pm.storm.attr.toaster.setpoint": {
-                "id": "0x3010",
+                "id": "0x4b00",
                 "name": "Temperature setpoint",
                 "format": [
                     [
@@ -453,13 +453,33 @@
                 ]
             },
             "pm.storm.attr.toaster.temp": {
-                "id": "0x3010",
+                "id": "0x4b01",
                 "name": "Temperature reading",
                 "format": [
                     [
                         "u16",
                         "Temperature",
                         "Temperature"
+                    ]
+                ]
+            }
+        }
+    },
+
+    "pm.storm.hotplate": {
+        "id": "0x3020",
+        "name": "Hotplate service",
+        "author": "Nikita Kitaev",
+        "desc": "Toaster service",
+        "attributes": {
+            "pm.storm.attr.hotplate.on": {
+                "id": "0x4001",
+                "name": "Hotplate on",
+                "format": [
+                    [
+                        "u8",
+                        "on",
+                        "The device is on if this is nonzero"
                     ]
                 ]
             }

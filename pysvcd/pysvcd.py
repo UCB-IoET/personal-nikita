@@ -27,7 +27,6 @@ packers = {
     }
 
 def svcd_unpack(val, format):
-    print "unpacking", val, format
     res = []
     for type in format:
         subval, val = unpackers[type](val)
@@ -95,12 +94,15 @@ class SerialBridge(object):
             my_callback_id = self.callback_id
             self.callback_id += 1
             obj["callback_id"] = my_callback_id
-            self.task_queue.put(obj)
+        self.task_queue.put(obj)
 
         if block:
-            for tries in range(10):
+            for tries in range(5):
                 try:
-                    item = self.return_queue.get(True, 5.0)
+                    if tries == 0:
+                        item = self.return_queue.get(True, 0.7)
+                    else:
+                        item = self.return_queue.get(True, 0.1)
                 except Empty:
                     raise TimeoutException
                 if "callback_id" in item and item["callback_id"] == my_callback_id:
@@ -146,8 +148,9 @@ class SerialBridge(object):
             # Print anything that is not a partial match
             m = partial_match.search(read_buf)
             if m:
-                sys.stdout.write(read_buf[:m.start()])
-                sys.stdout.flush()
+                if read_buf[:m.start()].strip() != "":
+                    sys.stdout.write(read_buf[:m.start()])
+                    sys.stdout.flush()
                 read_buf = read_buf[m.start():m.end()]
 
     def print_packed(self, obj):
@@ -239,12 +242,14 @@ class SerialSVCD(object):
                 subtable[strkk] = {}
                 for attr in vv:
                     strattr = self.get_attribute_name(strkk, attr)
-                    def attr_write(payload, timeout_ms):
-                        return self.write(ip, kk, attr, payload, timeout_ms)
-                    def attr_subscribe(on_notify):
-                        return self.subscribe(ip, kk, attr, on_notify)
-                    subtable[strkk][strattr] = SVCDObject(write=attr_write,
-                                                          subscribe=attr_subscribe)
+                    def temp(ip, kk, attr, strkk, strattr):
+                        def attr_write(payload, timeout_ms):
+                            return self.write(ip, kk, attr, payload, timeout_ms)
+                        def attr_subscribe(on_notify):
+                            return self.subscribe(ip, kk, attr, on_notify)
+                        subtable[strkk][strattr] = SVCDObject(write=attr_write,
+                                                              subscribe=attr_subscribe)
+                    temp(ip, kk, attr, strkk, strattr)
             table[k] = subtable
         return table
 
@@ -252,15 +257,20 @@ class SerialSVCD(object):
         ivkid = event["ivkid"]
         val = event["val"]
 
+        print "notify", ivkid, val
         if ivkid in self.notifiers:
             self.notifiers[ivkid](val)
 
     def __on_advert_received(self, event):
+        # print "got advert",
         try:
             srcip = event["srcip"]
             pay = msgpack.unpackb(event["pay"])
             srcport = event["srcport"]
+            # print pay["id"] if "id" in pay else srcip, srcip
+            # print pay
         except: # Failed to parse
+            # print "unparsed"
             return
 
         if "id" in pay:
@@ -290,7 +300,7 @@ class SerialSVCD(object):
             val = payload
         else:
             format = [x[0] for x in info["format"]]
-            val = svcd_pack(val, format)
+            val = svcd_pack(payload, format)
 
         obj = {
             "name": "SVCD.write",
@@ -322,13 +332,17 @@ class SerialSVCD(object):
         else:
             format = [x[0] for x in info["format"]]
             def wrapped_on_notify(val):
-                on_notify(svcd_unpack(val, format))
+                try:
+                    on_notify(svcd_unpack(val, format))
+                except:
+                    print "WARNING: invalid value from", svcid, attrid
 
         self.notifiers[ivkid] = wrapped_on_notify
 
         def unsubscribe_fn():
             self.__unsubscribe(targetip, svcid, attrid, ivkid)
 
+        print "subscribed", svcid, attrid, ivkid
         return unsubscribe_fn
 
     def __unsubscribe(self, targetip, svcid, attrid, ivkid):
