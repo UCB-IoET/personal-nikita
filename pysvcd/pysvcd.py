@@ -342,7 +342,6 @@ class SerialSVCD(object):
         def unsubscribe_fn():
             self.__unsubscribe(targetip, svcid, attrid, ivkid)
 
-        print "subscribed", svcid, attrid, ivkid
         return unsubscribe_fn
 
     def __unsubscribe(self, targetip, svcid, attrid, ivkid):
